@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>실시간 회의 번역기 (PoC)</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<!-- 동의 / 입장 화면 -->
+<main id="join-view" class="center-view">
+  <section class="card">
+    <h1>실시간 회의 번역기 <span class="tag">PoC</span></h1>
+
+    <div id="join-azure" class="badge badge-unknown">
+      <span class="dot"></span><span class="badge-text">상태 확인 중</span>
+    </div>
+    <p id="join-azure-reason" class="reason" hidden></p>
+
+    <label for="name">참석자 이름</label>
+    <input id="name" type="text" maxlength="20" autocomplete="off" placeholder="자막에 표시될 내 이름">
+
+    <label for="room">회의방 이름</label>
+    <input id="room" type="text" maxlength="12" autocomplete="off" placeholder="같은 이름을 입력한 사람끼리 한 방 (예: TEAM1)">
+
+    <div id="passcode-field" hidden>
+      <label for="passcode">접속 코드</label>
+      <input id="passcode" type="password" maxlength="32" autocomplete="off" placeholder="주최자에게 받은 코드">
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <label for="speak-lang">내가 말하는 언어</label>
+        <select id="speak-lang"></select>
+      </div>
+      <div class="col">
+        <label for="caption-lang">내가 볼 자막 언어</label>
+        <select id="caption-lang"></select>
+      </div>
+    </div>
+
+    <div class="notice">
+      <strong>음성 전송 안내</strong>
+      <p>발언 버튼을 누르는 동안 마이크 음성이 <b>Microsoft Azure 클라우드</b>로 전송되어
+      인식·번역됩니다. 음성과 자막은 서버에 저장되지 않으며 회의가 끝나면 삭제됩니다.</p>
+      <label class="check">
+        <input id="consent" type="checkbox">
+        <span>위 내용을 확인했으며 음성 전송에 동의합니다.</span>
+      </label>
+    </div>
+
+    <button id="join-btn" class="primary" disabled>회의방 입장</button>
+    <p id="join-error" class="error" hidden></p>
+  </section>
+</main>
+
+<!-- 회의 화면 -->
+<div id="meeting-view" hidden>
+  <header class="topbar">
+    <div class="topbar-left">
+      <span class="room-label">방</span>
+      <strong id="room-code"></strong>
+    </div>
+    <div class="topbar-right">
+      <div id="azure-badge" class="badge badge-unknown">
+        <span class="dot"></span><span class="badge-text">상태 확인 중</span>
+      </div>
+      <div id="conn-badge" class="badge badge-unknown">
+        <span class="dot"></span><span class="badge-text">연결 중</span>
+      </div>
+      <span id="participant-count" class="count">참가자 0명</span>
+      <div id="host-controls" hidden>
+        <button id="summarize" class="ghost">회의 정리</button>
+        <button id="export-txt" class="ghost">TXT</button>
+        <button id="export-json" class="ghost">JSON</button>
+        <button id="export-docx" class="ghost">DOCX</button>
+        <button id="end-room" class="ghost danger">회의 종료</button>
+      </div>
+    </div>
+  </header>
+
+  <ul id="participants" class="participants"></ul>
+
+  <!-- Host 전용 회의 정리 결과 -->
+  <section id="summary-panel" class="summary" hidden>
+    <div class="summary-head">
+      <strong>회의 정리</strong>
+      <span id="summary-meta" class="count"></span>
+      <div id="summary-tabs" class="summary-tabs"></div>
+      <button id="summary-close" class="ghost">닫기</button>
+    </div>
+    <div id="summary-body" class="summary-body"></div>
+  </section>
+
+  <main id="transcript" class="transcript" aria-live="polite"></main>
+  <div id="interim" class="interim" aria-live="off" hidden></div>
+
+  <footer class="bottombar">
+    <p id="floor-status" class="floor-status">발언 준비됨</p>
+    <button id="talk-btn" class="talk">말하려면 누르기</button>
+  </footer>
+</div>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

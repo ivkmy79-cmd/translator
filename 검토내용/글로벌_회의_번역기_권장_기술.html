@@ -1,0 +1,1322 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>임직원 글로벌 회의용 실시간 번역기 권장 기술</title>
+  <style>
+    :root {
+      --navy: #10284f;
+      --blue: #245dd8;
+      --blue-soft: #edf4ff;
+      --teal: #07877a;
+      --teal-soft: #eaf9f6;
+      --orange: #b86800;
+      --orange-soft: #fff4e3;
+      --red: #b42318;
+      --red-soft: #fff0ee;
+      --ink: #17243a;
+      --muted: #5f6b7d;
+      --line: #d8e1ed;
+      --paper: #ffffff;
+      --canvas: #f3f6fa;
+      --radius: 18px;
+      --shadow: 0 15px 42px rgba(16, 40, 79, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      background: var(--canvas);
+      color: var(--ink);
+      font-family: "Segoe UI", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+      line-height: 1.72;
+    }
+
+    a { color: var(--blue); }
+    a:hover { color: var(--navy); }
+
+    code, pre {
+      font-family: Consolas, "Cascadia Code", monospace;
+    }
+
+    code {
+      padding: 0.12rem 0.34rem;
+      border-radius: 5px;
+      background: #eaf0f7;
+      color: #1e3c65;
+      font-size: 0.91em;
+    }
+
+    .hero {
+      overflow: hidden;
+      color: white;
+      background:
+        radial-gradient(circle at 82% 12%, rgba(56, 221, 190, 0.28), transparent 28rem),
+        linear-gradient(130deg, #0f2347 0%, #204aab 56%, #0d7181 100%);
+    }
+
+    .hero-inner {
+      width: min(1180px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 74px 0 65px;
+    }
+
+    .eyebrow {
+      margin: 0 0 12px;
+      color: #9ff5e5;
+      font-size: 0.8rem;
+      font-weight: 800;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      max-width: 910px;
+      margin: 0;
+      font-size: clamp(2.2rem, 5vw, 4.45rem);
+      line-height: 1.08;
+      letter-spacing: -0.055em;
+    }
+
+    .hero p.lead {
+      max-width: 830px;
+      margin: 22px 0 0;
+      color: #dce8ff;
+      font-size: clamp(1rem, 2vw, 1.22rem);
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+      margin-top: 27px;
+    }
+
+    .chip {
+      padding: 7px 12px;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.09);
+      font-size: 0.88rem;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 255px minmax(0, 1fr);
+      gap: 30px;
+      align-items: start;
+      width: min(1180px, calc(100% - 40px));
+      margin: 34px auto 70px;
+    }
+
+    nav {
+      position: sticky;
+      top: 20px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--paper);
+      box-shadow: var(--shadow);
+    }
+
+    nav strong {
+      display: block;
+      margin: 0 0 8px;
+      color: var(--muted);
+      font-size: 0.76rem;
+      letter-spacing: 0.12em;
+    }
+
+    nav a {
+      display: block;
+      padding: 7px 9px;
+      border-radius: 8px;
+      color: var(--ink);
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+
+    nav a:hover {
+      background: var(--blue-soft);
+      color: var(--blue);
+    }
+
+    main { min-width: 0; }
+
+    section {
+      margin-bottom: 24px;
+      padding: clamp(24px, 4vw, 42px);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--paper);
+      box-shadow: var(--shadow);
+      scroll-margin-top: 20px;
+    }
+
+    h2, h3, h4 {
+      line-height: 1.28;
+      letter-spacing: -0.025em;
+    }
+
+    h2 {
+      margin: 0 0 18px;
+      color: var(--navy);
+      font-size: clamp(1.45rem, 3vw, 2rem);
+    }
+
+    h3 {
+      margin: 30px 0 12px;
+      font-size: 1.23rem;
+    }
+
+    h4 { margin: 20px 0 8px; }
+    p { margin: 0.65rem 0; }
+    ul, ol { padding-left: 1.35rem; }
+    li + li { margin-top: 0.4rem; }
+
+    .callout {
+      margin: 18px 0;
+      padding: 17px 19px;
+      border-left: 5px solid var(--blue);
+      border-radius: 0 12px 12px 0;
+      background: var(--blue-soft);
+    }
+
+    .callout.good { border-left-color: var(--teal); background: var(--teal-soft); }
+    .callout.warn { border-left-color: var(--orange); background: var(--orange-soft); }
+    .callout.danger { border-left-color: var(--red); background: var(--red-soft); }
+    .callout p:first-child { margin-top: 0; }
+    .callout p:last-child { margin-bottom: 0; }
+
+    .recommendation {
+      padding: 25px;
+      border: 2px solid #80d9c8;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #effcf9, #edf4ff);
+    }
+
+    .recommendation h3 {
+      margin: 0 0 10px;
+      color: #08685c;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      margin: 18px 0;
+    }
+
+    .card {
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      background: #fbfcfe;
+    }
+
+    .card strong {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--navy);
+    }
+
+    .card small { color: var(--muted); }
+
+    .language-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 11px;
+      margin: 20px 0;
+    }
+
+    .language {
+      padding: 16px 12px;
+      border: 1px solid #b9cbed;
+      border-radius: 13px;
+      background: linear-gradient(180deg, #f9fbff, #edf3ff);
+      text-align: center;
+    }
+
+    .language b {
+      display: block;
+      color: var(--navy);
+      font-size: 1.05rem;
+    }
+
+    .language span {
+      color: var(--muted);
+      font-family: Consolas, monospace;
+      font-size: 0.85rem;
+    }
+
+    .architecture {
+      display: grid;
+      gap: 10px;
+      margin: 22px 0;
+    }
+
+    .arch-row {
+      display: grid;
+      grid-template-columns: 160px minmax(0, 1fr);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .arch-label {
+      display: flex;
+      align-items: center;
+      padding: 15px;
+      color: white;
+      background: var(--navy);
+      font-weight: 700;
+    }
+
+    .arch-body {
+      padding: 15px 17px;
+      background: #f9fbfe;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      margin: 18px 0;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+    }
+
+    table {
+      width: 100%;
+      min-width: 760px;
+      border-collapse: collapse;
+      background: var(--paper);
+      font-size: 0.92rem;
+    }
+
+    th, td {
+      padding: 13px 14px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      color: #173665;
+      background: #edf3ff;
+      white-space: nowrap;
+    }
+
+    tbody tr:last-child td { border-bottom: 0; }
+    tbody tr:hover { background: #f8faff; }
+
+    .badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 999px;
+      color: #173f8f;
+      background: #e4edff;
+      font-size: 0.78rem;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .badge.green { color: #06695d; background: #dff7f1; }
+    .badge.orange { color: #8a4e00; background: #ffedcf; }
+
+    pre {
+      overflow-x: auto;
+      margin: 16px 0;
+      padding: 18px;
+      border-radius: 12px;
+      color: #e8f0ff;
+      background: #111c31;
+      font-size: 0.88rem;
+      line-height: 1.55;
+    }
+
+    .checklist {
+      padding: 0;
+      list-style: none;
+    }
+
+    .checklist li {
+      position: relative;
+      padding: 10px 10px 10px 36px;
+      border-bottom: 1px dashed var(--line);
+    }
+
+    .checklist li::before {
+      content: "✓";
+      position: absolute;
+      left: 8px;
+      color: var(--teal);
+      font-weight: 900;
+    }
+
+    .sources li { overflow-wrap: anywhere; }
+
+    footer {
+      padding: 30px 20px 50px;
+      color: var(--muted);
+      text-align: center;
+      font-size: 0.88rem;
+    }
+
+    @media (max-width: 930px) {
+      .layout { grid-template-columns: 1fr; }
+      nav { position: static; }
+      nav a { display: inline-block; margin: 2px; }
+      .language-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 650px) {
+      .hero-inner, .layout { width: min(100% - 24px, 1180px); }
+      .hero-inner { padding: 50px 0 44px; }
+      section { padding: 22px 18px; }
+      .cards, .language-grid { grid-template-columns: 1fr; }
+      .arch-row { grid-template-columns: 1fr; }
+      .arch-label { padding: 11px 15px; }
+    }
+
+    @media print {
+      body { background: white; }
+      .hero { background: #173b70 !important; print-color-adjust: exact; }
+      .layout { display: block; width: 100%; margin: 0; }
+      nav { display: none; }
+      section { box-shadow: none; break-inside: avoid; }
+      a { color: #173b70; text-decoration: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="hero-inner">
+      <p class="eyebrow">Recommended Technology Architecture</p>
+      <h1>임직원 글로벌 회의용 실시간 번역기</h1>
+      <p class="lead">
+        한국어·영어·중국어·베트남어가 사용되는 사내 글로벌 회의를 대상으로,
+        안정적인 실시간 번역 자막을 제공하기 위한 권장 기술과 구축 순서를 정리했다.
+      </p>
+      <div class="chips">
+        <span class="chip">한국어 ko-KR</span>
+        <span class="chip">영어 en-US</span>
+        <span class="chip">중국어 zh-CN</span>
+        <span class="chip">베트남어 vi-VN</span>
+        <span class="chip">조사 기준 2026-09-07 KST</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="layout">
+    <nav aria-label="보고서 목차">
+      <strong>CONTENTS</strong>
+      <a href="#executive">1. 최종 추천</a>
+      <a href="#requirements">2. 사용 조건</a>
+      <a href="#languages">3. 4개 언어 지원</a>
+      <a href="#stack">4. 권장 기술 스택</a>
+      <a href="#audio">5. 회의 음성 수집</a>
+      <a href="#language-id">6. 언어·화자 처리</a>
+      <a href="#flow">7. 번역 처리 흐름</a>
+      <a href="#glossary">8. 사내 용어</a>
+      <a href="#ui">9. 회의 화면</a>
+      <a href="#security">10. 보안·운영</a>
+      <a href="#alternatives">11. 대안 비교</a>
+      <a href="#roadmap">12. 구축 로드맵</a>
+      <a href="#validation">13. 검증 기준</a>
+      <a href="#sources">14. 공식 출처</a>
+    </nav>
+
+    <main>
+      <section id="executive">
+        <h2>1. 최종 추천</h2>
+
+        <div class="recommendation">
+          <h3>추천안: Azure 기반의 참가자별 분리형 실시간 번역</h3>
+          <p>
+            각 참가자의 음성 스트림을 분리해 Azure AI Speech로 전사하고, 확정된 원문을
+            Azure Translator로 필요한 대상 언어에 병렬 번역한다. 결과는 SignalR 또는
+            WebSocket으로 각 참가자에게 전달해 본인이 선택한 언어의 자막을 표시한다.
+          </p>
+        </div>
+
+        <div class="cards">
+          <div class="card">
+            <strong>회의 음성</strong>
+            Teams 사용 시 Microsoft Graph 실시간 미디어 봇을 우선 검토한다.
+            다른 플랫폼은 공식 SDK·봇 또는 참가자별 클라이언트 어댑터를 사용한다.
+          </div>
+          <div class="card">
+            <strong>음성 인식</strong>
+            Azure AI Speech 실시간 STT를 참가자별 스트림에 적용한다.
+            중간 자막과 확정 자막을 구분한다.
+          </div>
+          <div class="card">
+            <strong>번역</strong>
+            Azure Translator Text API로 원문 1개를 필요한 언어들에 병렬 번역한다.
+            회사 용어는 별도 용어 계층에서 통제한다.
+          </div>
+          <div class="card">
+            <strong>사용자 전달</strong>
+            ASP.NET Core와 SignalR로 참가자별 선택 언어 자막을 전달한다.
+            TTS는 기본값이 아닌 개인 선택 기능으로 둔다.
+          </div>
+        </div>
+
+        <div class="callout good">
+          <p><strong>왜 이 방식인가?</strong></p>
+          <p>
+            네 언어를 모두 지원하면서 원문 전사, 번역, 화자, 용어집, 보안과 오류 원인을
+            각각 확인할 수 있다. 회의 중 여러 사람이 서로 다른 언어를 쓰더라도 참가자 단위로
+            입력을 분리하면 자동 언어 감지와 화자 분리의 불확실성을 크게 줄일 수 있다.
+          </p>
+        </div>
+
+        <div class="callout warn">
+          <p><strong>번역 음성보다 번역 자막을 우선한다.</strong></p>
+          <p>
+            회의 전체에 번역 음성을 재생하면 원래 발언과 겹치고, 마이크로 다시 유입되어
+            재인식되는 문제가 생긴다. 첫 버전은 자막 중심으로 만들고, 번역 음성은 개인
+            헤드셋에서 요청했을 때만 재생하는 것이 안전하다.
+          </p>
+        </div>
+      </section>
+
+      <section id="requirements">
+        <h2>2. 글로벌 회의 사용 조건</h2>
+        <p>
+          일반 통역 앱과 달리 사내 회의 번역기는 다중 참가자, 여러 언어, 업무 용어,
+          기밀정보와 회의 플랫폼 통합을 동시에 다뤄야 한다. 다음 조건을 기준 설계로 삼는다.
+        </p>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>구분</th>
+                <th>기준 조건</th>
+                <th>설계 영향</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>사용자</td>
+                <td>사내 임직원과 승인된 외부 참석자</td>
+                <td>SSO, 권한, 외부 사용자 정책 필요</td>
+              </tr>
+              <tr>
+                <td>언어</td>
+                <td>한국어·영어·중국어(보통화)·베트남어</td>
+                <td>4개 입력 locale과 사용자별 출력 언어 관리</td>
+              </tr>
+              <tr>
+                <td>환경</td>
+                <td>온라인 회의와 하이브리드 회의</td>
+                <td>회의 플랫폼 음성과 회의실 음향을 구분</td>
+              </tr>
+              <tr>
+                <td>출력</td>
+                <td>실시간 번역 자막 중심</td>
+                <td>부분·확정 자막 UI와 지연 관리</td>
+              </tr>
+              <tr>
+                <td>업무 데이터</td>
+                <td>제품명, 고객명, 약어, 숫자, 일정</td>
+                <td>STT 힌트와 다국어 용어집 필수</td>
+              </tr>
+              <tr>
+                <td>보안</td>
+                <td>기밀 회의 가능</td>
+                <td>저장 최소화, 감사, 리전·보존 정책 검토</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>권장 1차 범위</h3>
+        <ul>
+          <li>참가자는 회의 입장 시 자신의 주 사용 언어와 자막 언어를 선택한다.</li>
+          <li>한 참가자가 한 번에 한 언어를 사용하는 것을 기본으로 한다.</li>
+          <li>동시에 여러 사람이 말할 때는 참가자별 스트림 또는 플랫폼 메타데이터로 구분한다.</li>
+          <li>원문과 번역문을 함께 표시해 숫자·이름 오류를 발견할 수 있게 한다.</li>
+          <li>회의 녹음과 전체 전사 저장은 기본으로 끄고 별도 승인을 받는다.</li>
+        </ul>
+      </section>
+
+      <section id="languages">
+        <h2>3. 대상 언어 지원과 코드</h2>
+
+        <div class="language-grid">
+          <div class="language">
+            <b>한국어</b>
+            <span>STT ko-KR · 번역 ko</span>
+          </div>
+          <div class="language">
+            <b>영어</b>
+            <span>STT en-US · 번역 en</span>
+          </div>
+          <div class="language">
+            <b>중국어</b>
+            <span>STT zh-CN · 번역 zh-Hans</span>
+          </div>
+          <div class="language">
+            <b>베트남어</b>
+            <span>STT vi-VN · 번역 vi</span>
+          </div>
+        </div>
+
+        <p>
+          Azure Speech의 실시간 음성 인식은 <code>ko-KR</code>, <code>en-US</code>,
+          <code>zh-CN</code>, <code>vi-VN</code>을 지원하며, 표준 Speech Translation의
+          번역 대상 텍스트 언어에도 한국어, 영어, 중국어 간체와 베트남어가 포함된다.
+        </p>
+
+        <div class="callout warn">
+          <p><strong>중국어 범위를 명확히 해야 한다.</strong></p>
+          <p>
+            이 문서는 중국 본토의 보통화와 간체 자막을 기본값으로 하여
+            <code>zh-CN</code>과 <code>zh-Hans</code>를 추천한다. 광둥어 또는 번체 중국어가
+            필요하면 <code>zh-HK</code>, <code>zh-TW</code>, <code>zh-Hant</code>를 별도 언어로
+            시험하고 UI 선택지를 분리해야 한다.
+          </p>
+        </div>
+
+        <h3>왜 언어 코드를 두 종류로 관리하는가</h3>
+        <p>
+          STT는 발음과 지역 억양을 구분하기 위해 전체 locale을 사용하고, 번역 API는 주로
+          언어 코드 또는 문자 체계를 사용한다. 내부 설정에서 <code>speechLocale</code>과
+          <code>translationLanguage</code>를 별도 필드로 보관해야 실수하기 어렵다.
+        </p>
+
+        <pre aria-label="언어 설정 예시">const LANGUAGES = {
+  ko: { speechLocale: "ko-KR", translationLanguage: "ko" },
+  en: { speechLocale: "en-US", translationLanguage: "en" },
+  zh: { speechLocale: "zh-CN", translationLanguage: "zh-Hans" },
+  vi: { speechLocale: "vi-VN", translationLanguage: "vi" }
+};</pre>
+      </section>
+
+      <section id="stack">
+        <h2>4. 권장 주요 기술 스택</h2>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>계층</th>
+                <th>추천 기술</th>
+                <th>역할</th>
+                <th>선정 이유</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>회의 연동</td>
+                <td>Microsoft Graph Real-time Media Bot</td>
+                <td>Teams 회의 참여와 실시간 음성 수신</td>
+                <td>참가자 브라우저의 임의 화면 캡처보다 운영 통제가 명확함</td>
+              </tr>
+              <tr>
+                <td>봇 런타임</td>
+                <td>C#/.NET + Azure VM/VMSS/AKS</td>
+                <td>Teams 미디어 스트림 처리</td>
+                <td>Teams application-hosted media bot의 공식 지원 경로</td>
+              </tr>
+              <tr>
+                <td>음성 인식</td>
+                <td>Azure AI Speech 실시간 STT</td>
+                <td>부분·확정 원문 전사</td>
+                <td>4개 대상 언어와 언어 식별, SDK, 보안 체계 지원</td>
+              </tr>
+              <tr>
+                <td>번역</td>
+                <td>Azure Translator Text API</td>
+                <td>원문을 1~3개 대상 언어로 병렬 번역</td>
+                <td>원문 1회 인식 후 참가자별 결과를 효율적으로 배포</td>
+              </tr>
+              <tr>
+                <td>용어 정확도</td>
+                <td>Phrase List + 앱 용어 계층 + Custom Translator</td>
+                <td>제품명·고객명·공정명 보호</td>
+                <td>STT와 번역 오류를 서로 다른 단계에서 제어</td>
+              </tr>
+              <tr>
+                <td>실시간 전달</td>
+                <td>ASP.NET Core SignalR / WebSocket</td>
+                <td>참가자별 자막과 상태 이벤트 전송</td>
+                <td>연결·그룹·재연결을 관리하기 쉬움</td>
+              </tr>
+              <tr>
+                <td>웹 UI</td>
+                <td>TypeScript 기반 웹 클라이언트</td>
+                <td>언어 선택, 원문·번역 자막, 상태 표시</td>
+                <td>회의 플랫폼과 분리된 공통 UI 구축 가능</td>
+              </tr>
+              <tr>
+                <td>선택적 음성</td>
+                <td>Azure Text to Speech</td>
+                <td>개인 헤드셋에 번역 음성 제공</td>
+                <td>회의 전체 재생이 아닌 사용자별 기능으로 제어 가능</td>
+              </tr>
+              <tr>
+                <td>인증</td>
+                <td>Microsoft Entra ID</td>
+                <td>임직원 SSO와 그룹 기반 접근 제어</td>
+                <td>M365·Azure 조직 환경과 통합하기 쉬움</td>
+              </tr>
+              <tr>
+                <td>비밀·권한</td>
+                <td>Managed Identity + Key Vault</td>
+                <td>API 비밀 보호와 키 없는 서비스 인증</td>
+                <td>브라우저와 코드 저장소의 키 노출 방지</td>
+              </tr>
+              <tr>
+                <td>관측성</td>
+                <td>Application Insights + Azure Monitor</td>
+                <td>지연·실패·사용량·비용 관찰</td>
+                <td>회의 품질을 수치로 추적하고 장애 원인을 분리</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout good">
+          <p>
+            <strong>플랫폼 독립성:</strong> 회사가 Teams를 사용하지 않아도 Speech, Translator,
+            SignalR, Entra ID 구조는 유지할 수 있다. 이 경우 첫 번째 “회의 연동” 계층만 Zoom,
+            Webex 또는 자체 WebRTC의 공식 SDK·봇으로 교체한다.
+          </p>
+        </div>
+      </section>
+
+      <section id="audio">
+        <h2>5. 회의 음성 수집 방식</h2>
+        <p>
+          번역 모델보다 먼저 결정해야 하는 것이 음성 입력 경로다. 원격 참가자의 음성을 받지 못하면
+          마이크 번역 데모는 가능해도 실제 글로벌 회의 번역기는 될 수 없다.
+        </p>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>방식</th>
+                <th>장점</th>
+                <th>제약</th>
+                <th>권장도</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Teams 미디어 봇</td>
+                <td>회의에 정식 참가하여 실시간 미디어와 회의 상태를 처리</td>
+                <td>C#/.NET, Azure 배포, 공개 연결, 운영 복잡도</td>
+                <td><span class="badge green">Teams 운영 추천</span></td>
+              </tr>
+              <tr>
+                <td>참가자별 번역 클라이언트</td>
+                <td>각 사용자 마이크가 분리되어 언어·화자 처리가 쉬움</td>
+                <td>모든 참가자가 앱을 실행해야 하고 원격 음성 공유 구조 필요</td>
+                <td><span class="badge">PoC 추천</span></td>
+              </tr>
+              <tr>
+                <td>브라우저 화면·시스템 오디오 캡처</td>
+                <td>빠른 실험, 기존 회의 앱 변경이 적음</td>
+                <td>권한 팝업, 브라우저·OS 차이, 화자 메타데이터 부족</td>
+                <td><span class="badge orange">임시 PoC</span></td>
+              </tr>
+              <tr>
+                <td>회의실 혼합 마이크</td>
+                <td>물리 회의실 전체 음성을 한 입력으로 처리</td>
+                <td>화자 분리와 중첩 발화 품질 저하</td>
+                <td><span class="badge orange">보조 경로</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Teams 미디어 봇의 기술적 주의점</h3>
+        <ul>
+          <li>공식 application-hosted media bot 경로는 C#/.NET을 요구한다.</li>
+          <li>운영 봇은 Azure의 Windows Server 환경에 배포해야 하는 조건이 있다.</li>
+          <li>Azure Web App에 단순 배포하는 형태가 아니며 VM, VMSS, AKS 등의 운영 설계가 필요하다.</li>
+          <li>미디어 호출은 이를 수락한 VM 인스턴스에 고정되므로 세션 중 VM 종료를 피해야 한다.</li>
+          <li>미디어 SDK 버전을 지속적으로 최신 상태에 가깝게 유지해야 한다.</li>
+          <li>개발자 미리 보기 상태인 항목은 구현 시점의 공식 문서를 다시 확인해야 한다.</li>
+        </ul>
+
+        <div class="callout danger">
+          <p><strong>단순 웹 페이지의 한계</strong></p>
+          <p>
+            <code>getUserMedia()</code>는 기본적으로 사용자의 로컬 마이크를 가져온다.
+            회의 앱에서 들리는 원격 참가자 전체 음성을 자동으로 제공하지 않는다. 화면 공유 기반
+            시스템 오디오 캡처는 사용자 선택과 플랫폼 지원에 의존하므로 장기 운영의 핵심 경로로
+            삼지 않는 것이 좋다.
+          </p>
+        </div>
+      </section>
+
+      <section id="language-id">
+        <h2>6. 언어 식별과 화자 처리</h2>
+
+        <h3>추천 우선순위</h3>
+        <ol>
+          <li><strong>참가자 프로필:</strong> 회의 입장 시 본인이 말할 언어를 선택한다.</li>
+          <li><strong>참가자별 스트림:</strong> 플랫폼이 제공하는 참가자·스트림 연결 정보를 사용한다.</li>
+          <li><strong>자동 언어 식별:</strong> 참가자가 선택 언어와 다르게 말할 때의 보조 기능으로 사용한다.</li>
+          <li><strong>혼합 음성 diarization:</strong> 참가자 스트림을 구할 수 없을 때의 최후 수단으로 둔다.</li>
+        </ol>
+
+        <p>
+          Azure Language Identification은 후보 언어 목록과 음성을 비교해 언어를 선택한다.
+          continuous LID는 최대 10개 후보를 받을 수 있으므로 이 프로젝트의 4개 언어를 후보로
+          구성할 수 있다. 다만 LID를 켜면 초기 지연이 증가하고, 후보에 없는 언어가 들어와도
+          후보 중 하나를 반환하므로 결과를 절대적인 사실로 취급하면 안 된다.
+        </p>
+
+        <pre aria-label="언어 자동 감지 후보">candidateSpeechLocales = [
+  "ko-KR",
+  "en-US",
+  "zh-CN",
+  "vi-VN"
+];</pre>
+
+        <div class="callout warn">
+          <p><strong>현재 조합 제약:</strong></p>
+          <p>
+            Azure의 다중 채널 실시간 전사는 diarization을 지원하지만, 공식 문서상 다중 채널 모드에서
+            Language Identification과 multilingual models는 지원되지 않는다. 따라서 “혼합 또는
+            다중 채널 하나에 화자 분리와 4개 언어 자동 감지를 모두 켜면 된다”는 설계는 피한다.
+          </p>
+        </div>
+
+        <h3>권장 해결 방식</h3>
+        <ul>
+          <li>가능하면 참가자별 모노 음성 스트림을 각각 STT 세션으로 처리한다.</li>
+          <li>참가자의 언어 설정을 STT locale로 사용해 속도와 정확도를 높인다.</li>
+          <li>언어가 자주 바뀌는 사용자에게만 continuous LID 세션을 허용한다.</li>
+          <li>플랫폼 참가자 ID를 화자 이름과 연결하고 음성 생체정보 기반 신원 확인은 하지 않는다.</li>
+          <li>여러 사람이 동시에 말하면 각 스트림은 처리하되 UI에서 중첩 발화를 별도 표시한다.</li>
+        </ul>
+      </section>
+
+      <section id="flow">
+        <h2>7. 권장 실시간 번역 처리 흐름</h2>
+
+        <div class="architecture">
+          <div class="arch-row">
+            <div class="arch-label">1. 회의 입력</div>
+            <div class="arch-body">Teams 미디어 봇 또는 플랫폼 어댑터가 참가자별 음성 스트림과 참가자 ID를 수신한다.</div>
+          </div>
+          <div class="arch-row">
+            <div class="arch-label">2. 음성 인식</div>
+            <div class="arch-body">참가자의 설정 언어로 Azure Speech 세션을 열고 partial·final 원문 전사를 생성한다.</div>
+          </div>
+          <div class="arch-row">
+            <div class="arch-label">3. 문장 안정화</div>
+            <div class="arch-body">부분 결과는 임시 자막으로 표시하고 final 결과만 기록·최종 번역 대상으로 확정한다.</div>
+          </div>
+          <div class="arch-row">
+            <div class="arch-label">4. 용어 보호</div>
+            <div class="arch-body">제품명, 조직명, 고객명, 코드와 숫자를 탐지해 사내 용어 규칙을 적용한다.</div>
+          </div>
+          <div class="arch-row">
+            <div class="arch-label">5. 번역 fan-out</div>
+            <div class="arch-body">원문 언어를 제외한 최대 3개 대상 언어로 병렬 번역하고 캐시한다.</div>
+          </div>
+          <div class="arch-row">
+            <div class="arch-label">6. 사용자 전달</div>
+            <div class="arch-body">SignalR 그룹으로 참가자별 선택 언어의 원문·번역·화자·시간 정보를 전송한다.</div>
+          </div>
+          <div class="arch-row">
+            <div class="arch-label">7. 선택적 TTS</div>
+            <div class="arch-body">요청한 사용자에게만 번역 음성을 합성해 개인 헤드셋으로 재생한다.</div>
+          </div>
+        </div>
+
+        <pre aria-label="논리 아키텍처">[Teams / Meeting Platform]
+            │ participant audio + participant ID
+            ▼
+  [Media Ingestion Adapter]
+            │ one logical stream per speaker
+            ▼
+      [Azure AI Speech]
+      partial / final transcript
+            │
+            ▼
+ [Terminology & Policy Layer]
+            │
+            ▼
+      [Azure Translator]
+       ko / en / zh / vi
+            │
+            ▼
+  [SignalR Caption Gateway]
+       ├─ Korean caption group
+       ├─ English caption group
+       ├─ Chinese caption group
+       └─ Vietnamese caption group</pre>
+
+        <h3>왜 Speech Translation 하나로 끝내지 않는가</h3>
+        <p>
+          Azure Speech Translation은 빠른 PoC에는 매우 좋다. 그러나 글로벌 회의 운영에서는
+          하나의 원문을 여러 참가자 언어에 재사용하고, 원문·번역·화자·용어 처리와 비용을 각각
+          관찰해야 한다. STT와 Translator를 논리적으로 분리하면 다음 이점이 있다.
+        </p>
+        <ul>
+          <li>원문 전사를 한 번만 생성하고 필요한 번역 결과를 캐시할 수 있다.</li>
+          <li>참가자가 중간에 자막 언어를 변경해도 확정 원문에서 다시 번역할 수 있다.</li>
+          <li>STT 오류와 번역 오류를 분리해 분석할 수 있다.</li>
+          <li>업무 용어를 번역 전에 보호하거나 번역 후 검사할 수 있다.</li>
+          <li>향후 특정 언어쌍만 다른 번역 엔진으로 교체하기 쉽다.</li>
+        </ul>
+
+        <h3>부분 번역 정책</h3>
+        <ul>
+          <li>빠른 체감을 위해 안정도가 높은 partial만 임시 번역한다.</li>
+          <li>임시 번역은 흐린 색으로 표시하고 계속 누적하지 않고 같은 발화 행을 교체한다.</li>
+          <li>final 원문이 오면 직전 문맥과 함께 다시 번역해 확정한다.</li>
+          <li>발화 ID와 sequence 번호로 늦게 도착한 이벤트가 final을 덮지 못하게 한다.</li>
+        </ul>
+      </section>
+
+      <section id="glossary">
+        <h2>8. 사내 용어와 번역 품질</h2>
+        <p>
+          글로벌 회의에서 체감 품질을 가장 크게 떨어뜨리는 것은 일반 문장이 아니라 회사명,
+          제품명, 공정명, 고객사, 조직 약어, 숫자와 납기다. 범용 모델 교체보다 먼저 회사 용어
+          관리 체계를 구축하는 편이 효과적이다.
+        </p>
+
+        <h3>3단계 용어 처리</h3>
+        <div class="cards">
+          <div class="card">
+            <strong>1. STT Phrase List</strong>
+            제품명과 약어가 소리에서 원문 텍스트로 정확히 변환되도록 후보 용어를 제공한다.
+          </div>
+          <div class="card">
+            <strong>2. 애플리케이션 용어 계층</strong>
+            원문에서 보호할 토큰을 찾아 번역 전후에 검증한다. 숫자·단위·부품번호도 함께 검사한다.
+          </div>
+          <div class="card">
+            <strong>3. Custom Translator</strong>
+            충분한 승인 번역문과 회의 문장이 쌓인 언어쌍은 도메인 맞춤 번역 모델을 별도 평가한다.
+          </div>
+          <div class="card">
+            <strong>4. 사람 피드백</strong>
+            임직원이 수정한 용어를 바로 모델에 넣지 않고 검토·승인·버전 관리 후 배포한다.
+          </div>
+        </div>
+
+        <h3>Dynamic Dictionary 제한</h3>
+        <p>
+          Azure Translator의 dynamic dictionary는 고유명사와 복합명사처럼 제한된 용도에 적합하며,
+          공식 문서상 영어와 다른 지원 언어의 조합을 요구한다. 따라서 한국어↔중국어,
+          한국어↔베트남어처럼 영어가 포함되지 않는 모든 조합을 이것 하나로 해결할 수 없다.
+          네 언어 전체에는 애플리케이션 용어 계층과 언어쌍별 검증이 필요하다.
+        </p>
+
+        <h3>권장 용어 데이터 구조</h3>
+        <pre aria-label="다국어 용어 예시">{
+  "termId": "product-ax100",
+  "type": "product_name",
+  "doNotTranslate": true,
+  "forms": {
+    "ko": "AX100",
+    "en": "AX100",
+    "zh-Hans": "AX100",
+    "vi": "AX100"
+  },
+  "speechHints": ["에이엑스 백", "AX one hundred"],
+  "approvedBy": "language-admin",
+  "version": 3
+}</pre>
+
+        <h3>품질 우선순위</h3>
+        <ol>
+          <li>숫자, 날짜, 통화, 수량과 단위가 바뀌지 않아야 한다.</li>
+          <li>제품명, 고객명, 사람 이름과 조직 약어가 보존되어야 한다.</li>
+          <li>부정 표현과 확정·예상·검토 같은 업무 상태가 정확해야 한다.</li>
+          <li>문장이 자연스러운지는 의미 정확도 다음에 평가한다.</li>
+        </ol>
+      </section>
+
+      <section id="ui">
+        <h2>9. 회의 자막 화면의 필수 기능</h2>
+
+        <div class="cards">
+          <div class="card">
+            <strong>내 말하기 언어</strong>
+            참가자가 현재 사용하는 입력 언어를 선택한다. 자동 감지는 선택 옵션으로 둔다.
+          </div>
+          <div class="card">
+            <strong>내 자막 언어</strong>
+            각 참가자가 한국어, 영어, 중국어, 베트남어 중 하나를 독립적으로 선택한다.
+          </div>
+          <div class="card">
+            <strong>원문 + 번역문</strong>
+            번역문을 크게 표시하되 원문을 함께 제공해 이름과 숫자를 비교할 수 있게 한다.
+          </div>
+          <div class="card">
+            <strong>화자 표시</strong>
+            플랫폼 참가자 이름을 사용하고 불확실한 음성 기반 신원 추측은 하지 않는다.
+          </div>
+          <div class="card">
+            <strong>임시·확정 상태</strong>
+            partial은 흐리게, final은 선명하게 표시하고 자막이 수정될 수 있음을 알린다.
+          </div>
+          <div class="card">
+            <strong>보안 상태</strong>
+            번역 활성화, 저장 여부, 녹음 여부, 중지 버튼을 항상 보이게 한다.
+          </div>
+        </div>
+
+        <h3>접근성과 사용성</h3>
+        <ul>
+          <li>색만으로 원문·번역·임시 상태를 구분하지 않고 텍스트 라벨을 함께 사용한다.</li>
+          <li>글자 크기, 고대비, 자막 줄 수, 자동 스크롤을 사용자가 조절할 수 있게 한다.</li>
+          <li>화면 읽기 도구에 final 자막만 과도하지 않게 전달하도록 live region을 설계한다.</li>
+          <li>발언이 겹치면 화자별 열보다 시간순 카드가 모바일과 작은 창에서 읽기 쉽다.</li>
+          <li>번역 실패 시 빈 화면이 아니라 원문과 명확한 오류 상태를 유지한다.</li>
+        </ul>
+
+        <h3>TTS 사용 정책</h3>
+        <ul>
+          <li>회의 전체 스피커에는 기본적으로 재생하지 않는다.</li>
+          <li>개인 헤드셋 사용자만 자신이 선택한 번역 음성을 들을 수 있게 한다.</li>
+          <li>다음 발화가 시작되면 이전 번역 음성을 축약하거나 취소할 수 있게 한다.</li>
+          <li>빠른 partial이 아니라 확정 또는 안정된 문장 조각만 합성한다.</li>
+        </ul>
+      </section>
+
+      <section id="security">
+        <h2>10. 보안·개인정보·운영 기술</h2>
+
+        <h3>인증과 권한</h3>
+        <ul>
+          <li>Microsoft Entra ID SSO로 임직원과 외부 참석자를 구분한다.</li>
+          <li>회의 생성자, 번역 사용자, 용어 관리자, 운영 관리자 역할을 분리한다.</li>
+          <li>백엔드는 Managed Identity로 Azure 서비스에 접근하고 가능한 경우 정적 키를 없앤다.</li>
+          <li>필요한 비밀은 Key Vault에 저장하며 웹 클라이언트에 서비스 키를 전달하지 않는다.</li>
+        </ul>
+
+        <h3>데이터 보존</h3>
+        <p>
+          Microsoft 공식 문서에 따르면 Azure의 실시간 Speech-to-Text는 음성을 서버 메모리에서
+          처리하며 저장소에 보관하지 않고, 실시간 STT와 Speech Translation에서 고객 제공 데이터를
+          보존하지 않는다고 설명한다. 그러나 애플리케이션이 별도로 저장하는 자막·로그·용어 데이터는
+          회사가 직접 보존 정책과 삭제 기능을 설계해야 한다.
+        </p>
+
+        <div class="callout danger">
+          <p><strong>화자 분리는 생체정보 관련 검토가 필요할 수 있다.</strong></p>
+          <p>
+            diarization은 화자 구분을 위해 음성 특성 신호를 분석한다. 플랫폼 참가자 ID로 화자를
+            연결할 수 있다면 이를 먼저 사용하고, 음성 기반 화자 분리를 활성화하기 전에는 법무·보안
+            검토와 참석자 고지·동의 절차를 확인한다.
+          </p>
+        </div>
+
+        <h3>저장 기본값</h3>
+        <ul>
+          <li>원본 음성 저장: 기본 끔</li>
+          <li>전체 원문·번역 저장: 기본 끔 또는 회의 주최자 정책 적용</li>
+          <li>운영 로그: 원문을 제외한 세션 ID, 지연, 오류 코드, 사용량 중심</li>
+          <li>용어 오류 피드백: 사용자가 명시적으로 제출한 문장만 별도 보관</li>
+          <li>보존 기간 종료: 자동 삭제와 관리자가 확인할 수 있는 삭제 기록</li>
+        </ul>
+
+        <h3>관측 지표</h3>
+        <ul>
+          <li>회의 참가 성공률과 미디어 연결 시간</li>
+          <li>언어별 첫 partial, final, 번역 완료 지연의 p50·p95</li>
+          <li>빈 전사, 중복 자막, 잘린 문장, 재연결 횟수</li>
+          <li>언어쌍별 번역 호출량과 회의당 예상 비용</li>
+          <li>용어 보호 실패, 숫자 변경, 사용자 수정 비율</li>
+        </ul>
+      </section>
+
+      <section id="alternatives">
+        <h2>11. 주요 대안과 선택 기준</h2>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>대안</th>
+                <th>장점</th>
+                <th>이 프로젝트의 주의점</th>
+                <th>판단</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Azure Speech Translation 단독</td>
+                <td>구현이 빠르고 실시간 번역 결과를 바로 받을 수 있음</td>
+                <td>원문 재사용, 여러 대상 언어, 용어·비용 관찰의 유연성이 낮아질 수 있음</td>
+                <td><span class="badge green">PoC에 유리</span></td>
+              </tr>
+              <tr>
+                <td>Azure STT + Translator</td>
+                <td>원문·번역 분리, 다국어 fan-out, 용어와 오류 분석 용이</td>
+                <td>처리 단계와 네트워크 호출이 늘어남</td>
+                <td><span class="badge green">운영 추천</span></td>
+              </tr>
+              <tr>
+                <td>GPT Realtime Translate 계열</td>
+                <td>연속 음성의 자연스러운 저지연 번역 가능성</td>
+                <td>4개 언어, 특히 베트남어와 업무 용어 품질을 동일 데이터로 검증해야 함</td>
+                <td><span class="badge">비교 PoC</span></td>
+              </tr>
+              <tr>
+                <td>Google STT + Cloud Translation</td>
+                <td>스트리밍 STT와 Translation Advanced의 용어집·모델 선택</td>
+                <td>GCP 인증·gRPC·운영 체계를 추가로 관리</td>
+                <td><span class="badge">GCP 조직 대안</span></td>
+              </tr>
+              <tr>
+                <td>AWS Transcribe + Translate</td>
+                <td>WebSocket/HTTP2 STT와 AWS 운영 도구 통합</td>
+                <td>기존 Azure·M365 환경이면 플랫폼이 분산될 수 있음</td>
+                <td><span class="badge">AWS 조직 대안</span></td>
+              </tr>
+              <tr>
+                <td>자체 호스팅 모델</td>
+                <td>음성 데이터 경로와 모델 운영을 직접 통제</td>
+                <td>GPU, 지연 최적화, 업데이트, 보안, 4개 언어 품질 책임이 커짐</td>
+                <td><span class="badge orange">장기 R&amp;D</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>추천 결정을 바꾸는 조건</h3>
+        <ul>
+          <li><strong>회사 회의 플랫폼이 Teams가 아님:</strong> 음성 수집 계층만 해당 플랫폼 공식 SDK로 교체한다.</li>
+          <li><strong>Azure 사용이 금지됨:</strong> 현재 주력 클라우드의 STT·번역 조합을 동일 평가 데이터로 비교한다.</li>
+          <li><strong>음성의 외부 전송이 금지됨:</strong> 온프레미스 컨테이너·자체 모델을 우선 조사한다.</li>
+          <li><strong>번역 음성이 핵심임:</strong> 전용 speech-to-speech 모델을 별도 트랙으로 평가한다.</li>
+          <li><strong>중국어가 광둥어 또는 번체임:</strong> 언어 locale과 TTS 음성을 별도 제품 요구사항으로 확장한다.</li>
+        </ul>
+      </section>
+
+      <section id="roadmap">
+        <h2>12. 단계별 구축 로드맵</h2>
+
+        <h3>1단계 — 2주 내외 기술 PoC</h3>
+        <ul>
+          <li>참가자별 마이크 입력 또는 저장된 4개 언어 회의 음성으로 STT 연결</li>
+          <li>원문·번역 partial/final 자막 이벤트 구현</li>
+          <li>한국어를 공통 출력 언어로 먼저 시험</li>
+          <li>제품명 30개, 숫자·날짜·단위가 포함된 평가 문장 작성</li>
+          <li>Azure Speech Translation 단독과 STT + Translator 조합 비교</li>
+        </ul>
+
+        <h3>2단계 — 회의용 MVP</h3>
+        <ul>
+          <li>입력 4개 언어와 사용자별 출력 4개 언어 선택</li>
+          <li>Entra ID 로그인과 회의 세션 권한</li>
+          <li>SignalR 자막 그룹과 재연결</li>
+          <li>사내 용어집 버전 1과 숫자 보존 검사</li>
+          <li>원본 음성 비저장, 메타데이터 중심 로그</li>
+        </ul>
+
+        <h3>3단계 — 실제 회의 플랫폼 통합</h3>
+        <ul>
+          <li>Teams라면 application-hosted media bot의 별도 인프라 PoC</li>
+          <li>회의 참가·퇴장, 참가자 ID, 동시 발화, 회의 종료 처리</li>
+          <li>회의 30분·60분 지속성 및 VM 장애 복구 시험</li>
+          <li>보안·법무·개인정보 검토와 참석자 고지</li>
+        </ul>
+
+        <h3>4단계 — 제한된 사내 파일럿</h3>
+        <ul>
+          <li>언어별 원어민 임직원이 실제 업무 회의에서 품질 평가</li>
+          <li>언어쌍별 오류와 수정 데이터를 용어 관리자에게 전달</li>
+          <li>회의당 비용, 지연, 실패율, 사용자 만족도 측정</li>
+          <li>보존 정책과 삭제 요청 절차 검증</li>
+        </ul>
+
+        <h3>5단계 — 운영 확장</h3>
+        <ul>
+          <li>언어쌍별 품질 기준을 통과한 기능만 정식 제공</li>
+          <li>동시 회의 수에 따른 미디어 봇 VM 확장 정책</li>
+          <li>용어 승인·배포·롤백 체계</li>
+          <li>개인 헤드셋 TTS, 회의 요약 등은 별도 승인 후 추가</li>
+        </ul>
+
+        <div class="callout good">
+          <p><strong>가장 먼저 검증할 것</strong></p>
+          <p>
+            UI보다 먼저 각 언어 원어민의 실제 회의 음성 30~60분을 확보해 STT 정확도,
+            숫자·제품명 오류, final 번역 지연을 측정한다. 이 결과가 기술 공급자와 용어 전략을
+            결정하는 가장 중요한 근거가 된다.
+          </p>
+        </div>
+      </section>
+
+      <section id="validation">
+        <h2>13. PoC와 운영 검증 기준</h2>
+
+        <h3>평가 데이터 구성</h3>
+        <ul>
+          <li>각 언어 최소 100개 발화와 3명 이상의 화자</li>
+          <li>깨끗한 헤드셋, 노트북 마이크, 회의실 스피커폰 음성</li>
+          <li>제품명, 고객사, 조직 약어, 이메일, 숫자, 통화, 날짜, 단위 포함</li>
+          <li>빠른 말, 억양, 침묵, 끼어들기, 두 사람 동시 발화 포함</li>
+          <li>원어민이 확인한 원문과 번역 기준문</li>
+        </ul>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>지표</th>
+                <th>측정 대상</th>
+                <th>권장 판정 방식</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>STT WER/CER</td>
+                <td>언어별 원문 전사</td>
+                <td>전체 평균과 언어·장치별 결과를 함께 보고</td>
+              </tr>
+              <tr>
+                <td>핵심 정보 정확도</td>
+                <td>숫자, 날짜, 단위, 제품명</td>
+                <td>항목별 exact match와 심각 오류 건수</td>
+              </tr>
+              <tr>
+                <td>번역 의미 정확도</td>
+                <td>12개 방향의 언어쌍</td>
+                <td>자동 지표와 원어민 5점 평가 병행</td>
+              </tr>
+              <tr>
+                <td>첫 partial 지연</td>
+                <td>발화 시작→첫 화면 표시</td>
+                <td>p50·p95, 언어별 분리</td>
+              </tr>
+              <tr>
+                <td>final 번역 지연</td>
+                <td>발화 종료→확정 번역 표시</td>
+                <td>p50·p95와 3초 초과율</td>
+              </tr>
+              <tr>
+                <td>운영 안정성</td>
+                <td>60분 회의와 네트워크 단절</td>
+                <td>유실·중복·재연결·세션 종료 오류</td>
+              </tr>
+              <tr>
+                <td>비용</td>
+                <td>STT 분·번역 문자·TTS 사용량</td>
+                <td>회의당·참가자당·언어당 실제 비용</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>출시 전 체크리스트</h3>
+        <ul class="checklist">
+          <li>4개 입력 언어와 12개 방향의 출력 언어쌍을 실제 음성으로 확인했다.</li>
+          <li>중국어가 보통화·간체라는 범위를 사용자와 합의했다.</li>
+          <li>참가자별 음성·언어·화자 연결이 틀어지지 않는다.</li>
+          <li>partial 이벤트가 final 자막을 덮거나 중복 저장하지 않는다.</li>
+          <li>숫자·날짜·단위·제품명 심각 오류 기준과 대응 UI가 있다.</li>
+          <li>회의 중 네트워크 장애 후 자동 복구와 중복 과금 방지가 동작한다.</li>
+          <li>웹 클라이언트와 로그에 API 키나 토큰 원문이 노출되지 않는다.</li>
+          <li>음성·자막 저장 여부와 보존 기간이 참석자에게 표시된다.</li>
+          <li>회의 종료 후 마이크, 미디어 연결, STT 세션이 모두 닫힌다.</li>
+          <li>빈 전사나 번역 0건을 성공으로 기록하지 않는다.</li>
+        </ul>
+      </section>
+
+      <section id="sources">
+        <h2>14. 공식 출처</h2>
+        <p>
+          2026-09-07 KST 기준으로 확인한 자료다. 기능, SDK 버전, 지원 locale, 리전,
+          미리 보기 상태와 가격은 구현 직전에 공식 문서에서 다시 확인해야 한다.
+        </p>
+
+        <ol class="sources">
+          <li>
+            <a href="https://learn.microsoft.com/en-us/azure/ai-services/speech-service/language-support" target="_blank" rel="noopener noreferrer">
+              Microsoft — Azure Speech language and voice support
+            </a>: 한국어·영어·중국어·베트남어 STT, Speech Translation, TTS 지원 범위.
+          </li>
+          <li>
+            <a href="https://learn.microsoft.com/en-us/azure/ai-services/speech-service/language-identification" target="_blank" rel="noopener noreferrer">
+              Microsoft — Azure Speech language identification
+            </a>: 후보 언어, at-start·continuous LID, 후보 수와 초기 지연 주의사항.
+          </li>
+          <li>
+            <a href="https://learn.microsoft.com/en-us/azure/ai-services/speech-service/speech-translation" target="_blank" rel="noopener noreferrer">
+              Microsoft — Azure Speech Translation overview
+            </a>: 실시간 음성→텍스트·음성 번역과 다중 대상 언어.
+          </li>
+          <li>
+            <a href="https://learn.microsoft.com/en-us/azure/ai-services/speech-service/how-to-recognize-speech-multichannel" target="_blank" rel="noopener noreferrer">
+              Microsoft — Multichannel real-time transcription
+            </a>: 다중 채널, diarization, 언어 식별·다국어 모델 조합 제한.
+          </li>
+          <li>
+            <a href="https://learn.microsoft.com/en-us/microsoftteams/platform/bots/calls-and-meetings/requirements-considerations-application-hosted-media-bots" target="_blank" rel="noopener noreferrer">
+              Microsoft — Teams application-hosted media bot requirements
+            </a>: C#/.NET, Azure Windows Server 배포, 미디어 세션과 인프라 요구사항.
+          </li>
+          <li>
+            <a href="https://learn.microsoft.com/en-us/microsoftteams/platform/sbs-calling-and-meeting" target="_blank" rel="noopener noreferrer">
+              Microsoft — Teams calling and meeting bot
+            </a>: Graph 통신 API를 이용한 회의 참여와 실시간 미디어 상호작용.
+          </li>
+          <li>
+            <a href="https://learn.microsoft.com/en-us/azure/ai-services/translator/text-translation/how-to/use-dynamic-dictionary" target="_blank" rel="noopener noreferrer">
+              Microsoft — Translator dynamic dictionary
+            </a>: 고유명사·제품명 커스터마이징과 영어 포함 언어쌍 제한.
+          </li>
+          <li>
+            <a href="https://learn.microsoft.com/en-us/azure/ai-services/translator/custom-translator/overview" target="_blank" rel="noopener noreferrer">
+              Microsoft — Custom Translator overview
+            </a>: 사내·산업 용어를 반영한 맞춤 번역 시스템.
+          </li>
+          <li>
+            <a href="https://learn.microsoft.com/en-us/azure/foundry/responsible-ai/speech-service/speech-to-text/data-privacy-security" target="_blank" rel="noopener noreferrer">
+              Microsoft — Speech data, privacy and security
+            </a>: 실시간 음성 처리, 저장·보존, diarization과 고객 책임.
+          </li>
+          <li>
+            <a href="https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia" target="_blank" rel="noopener noreferrer">
+              MDN — MediaDevices.getUserMedia()
+            </a>: 브라우저 마이크 권한, HTTPS와 안전한 컨텍스트.
+          </li>
+          <li>
+            <a href="https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getDisplayMedia" target="_blank" rel="noopener noreferrer">
+              MDN — MediaDevices.getDisplayMedia()
+            </a>: 화면·시스템 오디오 캡처의 사용자 권한과 지원 제약.
+          </li>
+          <li>
+            <a href="https://developers.openai.com/api/docs/guides/realtime-webrtc" target="_blank" rel="noopener noreferrer">
+              OpenAI — Realtime API with WebRTC
+            </a>: 브라우저 실시간 음성 연결과 서버 측 인증 구조 비교 참고.
+          </li>
+        </ol>
+
+        <div class="callout good">
+          <p><strong>최종 한 줄 권고</strong></p>
+          <p>
+            Teams/M365 중심 기업이라면 <strong>Teams 미디어 봇 + 참가자별 Azure Speech STT +
+            Azure Translator + SignalR + Entra ID</strong>를 기준안으로 삼고, 먼저 자막형 PoC로
+            4개 언어와 사내 용어의 실제 품질을 검증한다.
+          </p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer>
+    임직원 글로벌 회의용 실시간 번역기 권장 기술 · 2026-09-07 KST · 기능과 지원 범위는 구현 시점에 재확인
+  </footer>
+</body>
+</html>

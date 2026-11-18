@@ -1,0 +1,18 @@
+# secrets
+.env
+*.pem
+*.key
+certs/
+
+# python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# backups / scratch
+*.bak
+
+# os
+Thumbs.db
+desktop.ini
